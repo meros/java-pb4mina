@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.Message;
+import com.google.protobuf.Message.Builder;
 
 /**
  * 
@@ -90,7 +91,7 @@ public class ProtoBufDecoder extends CumulativeProtocolDecoder {
 			InputStream delimitedInputStream = new BoundedInputStream(inputStream.asInputStream(), packageLength);
 			
 			//Retrieve a builder
-			com.google.protobuf.GeneratedMessage.Builder<?> builder = protoBufMessageFactory.createProtoBufMessage();
+			Builder builder = protoBufMessageFactory.createProtoBufMessage();
 		
 			//And parse/build the message
 			builder.mergeFrom(delimitedInputStream);
