@@ -3,19 +3,16 @@ package minaserver;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import minaserver.Test.Person;
-import minaserver.Test.Person.Builder;
+import minaserver.TestProtFile.Person;
+import minaserver.TestProtFile.Person.Builder;
 
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolCodecFactory;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.ProtocolDecoder;
-import org.apache.mina.filter.codec.ProtocolEncoder;
-import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.meros.pb4mina.ProtoBufCoderFilter;
+import org.meros.pb4mina.ProtoBufMessageFactory;
 import org.slf4j.LoggerFactory;
 
 

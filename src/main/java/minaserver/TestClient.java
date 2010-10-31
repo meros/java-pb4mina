@@ -3,8 +3,8 @@ package minaserver;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-import minaserver.Test.Person;
-import minaserver.Test.Person.Builder;
+import minaserver.TestProtFile.Person;
+import minaserver.TestProtFile.Person.Builder;
 
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoHandler;
@@ -12,6 +12,8 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.meros.pb4mina.ProtoBufCoderFilter;
+import org.meros.pb4mina.ProtoBufMessageFactory;
 
 
 
