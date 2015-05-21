@@ -3,5 +3,6 @@ pb4mina
 
 Protocol buffer encoder/decoder for mina/java servers
 
-Status:
+Status
+---
 No plans, this is a quick PoC project only
