@@ -1,8 +1,10 @@
 package org.meros.pb4mina;
 
+import com.google.protobuf.CodedInputStream;
+import com.google.protobuf.Message;
+import com.google.protobuf.Message.Builder;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
@@ -10,108 +12,100 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.protobuf.CodedInputStream;
-import com.google.protobuf.Message;
-import com.google.protobuf.Message.Builder;
-
 /**
- * 
- * Decoder for protobuf messages. The messages are delimited by a 4 byte uint32 size header 
- * 
- * @author meros
+ * Decoder for protobuf messages. The messages are delimited by a 4 byte uint32 size header
  *
+ * @author meros
  */
 public class ProtoBufDecoder extends CumulativeProtocolDecoder {
 
-	private final ProtoBufMessageFactory protoBufMessageFactory;
+  private final ProtoBufMessageFactory protoBufMessageFactory;
 
-	enum State {
-		ReadingLength,
-		ReadingPackage,
-	}
-	
-	State state = State.ReadingLength;
-	
-	static final int packageLengthTokenSize = 4;
-	int packageLength = 0;
+  enum State {
+    ReadingLength,
+    ReadingPackage,
+  }
 
-	private Logger logger;
-	
-	ProtoBufDecoder(ProtoBufMessageFactory protoBufMessageFactory) {
-		logger = LoggerFactory.getLogger(ProtoBufDecoder.class);
-		this.protoBufMessageFactory = protoBufMessageFactory;		
-	}
-	
-	@Override
-	protected boolean doDecode(
-			IoSession ioSession, 
-			IoBuffer ioBuffer,
-			ProtocolDecoderOutput decoderOutput) {
-		try {
+  State state = State.ReadingLength;
 
-			if (state == State.ReadingLength) {
-				packageLength = readLength(ioBuffer);
+  static final int packageLengthTokenSize = 4;
+  int packageLength = 0;
 
-				if (packageLength != -1) {
-					state = State.ReadingPackage;
-				}				
-			}
+  private Logger logger;
 
-			if (state == State.ReadingPackage) {
-				Message message = readMessage(ioBuffer, protoBufMessageFactory, packageLength);
+  ProtoBufDecoder(ProtoBufMessageFactory protoBufMessageFactory) {
+    logger = LoggerFactory.getLogger(ProtoBufDecoder.class);
+    this.protoBufMessageFactory = protoBufMessageFactory;
+  }
 
-				if (message != null) {
-					decoderOutput.write(message);
-					
-					state = State.ReadingLength;
+  @Override
+  protected boolean doDecode(
+      IoSession ioSession, IoBuffer ioBuffer, ProtocolDecoderOutput decoderOutput) {
+    try {
 
-					//There might be more message to be parsed 
-					return true;
-				}					
-			}
-		} catch(IOException e) {
-			logger.error("IOException while trying to decode a readmessage", e);
-			ioSession.close(true);
-		}
+      if (state == State.ReadingLength) {
+        packageLength = readLength(ioBuffer);
 
-		//Need more data
-		return false;
-	}
+        if (packageLength != -1) {
+          state = State.ReadingPackage;
+        }
+      }
 
-	private static Message readMessage(
-			IoBuffer inputStream,
-			ProtoBufMessageFactory protoBufMessageFactory,
-			int packageLength) throws IOException {
-		int remainingBytesInStream = inputStream.remaining(); 
-		if (remainingBytesInStream < packageLength) {
-			//Not enough data to parse message
-			return null;
-		} else {
-			//Create a delimited input stream around the real input stream
-			InputStream delimitedInputStream = new BoundedInputStream(inputStream.asInputStream(), packageLength);
-			
-			//Retrieve a builder
-			Builder builder = protoBufMessageFactory.createProtoBufMessage();
-		
-			//And parse/build the message
-			builder.mergeFrom(delimitedInputStream);
-			Message message = builder.build();
-			
-			return message;
-		}
-	}
+      if (state == State.ReadingPackage) {
+        Message message = readMessage(ioBuffer, protoBufMessageFactory, packageLength);
 
-	private static int readLength(IoBuffer inputStream) throws IOException {
-		if (inputStream.remaining() < packageLengthTokenSize) {
-			return -1;
-		} 
-		
-		//Create lenght delimited input stream
-		InputStream delimitedInputStream = new BoundedInputStream(inputStream.asInputStream(), packageLengthTokenSize);
+        if (message != null) {
+          decoderOutput.write(message);
 
-		//Read length of incoming protobuf
-		CodedInputStream codedInputStream = CodedInputStream.newInstance(delimitedInputStream);
-		return codedInputStream.readFixed32();
-	}
+          state = State.ReadingLength;
 
+          // There might be more messages to be parsed
+          return true;
+        }
+      }
+    } catch (IOException e) {
+      logger.error("IOException while trying to decode a message", e);
+      ioSession.closeNow();
+    }
+
+    // Need more data
+    return false;
+  }
+
+  private static Message readMessage(
+      IoBuffer inputStream, ProtoBufMessageFactory protoBufMessageFactory, int packageLength)
+      throws IOException {
+    int remainingBytesInStream = inputStream.remaining();
+    if (remainingBytesInStream < packageLength) {
+      // Not enough data to parse message
+      return null;
+    } else {
+      // Create a delimited input stream around the real input stream
+      InputStream delimitedInputStream =
+          new BoundedInputStream(inputStream.asInputStream(), packageLength);
+
+      // Retrieve a builder
+      Builder builder = protoBufMessageFactory.createProtoBufMessage();
+
+      // And parse/build the message
+      builder.mergeFrom(delimitedInputStream);
+      Message message = builder.build();
+
+      return message;
+    }
+  }
+
+  private static int readLength(IoBuffer inputStream) throws IOException {
+    if (inputStream.remaining() < packageLengthTokenSize) {
+      return -1;
+    }
+
+    // Create length-delimited input stream
+    InputStream delimitedInputStream =
+        new BoundedInputStream(inputStream.asInputStream(), packageLengthTokenSize);
+
+    // Read length of incoming protobuf
+    CodedInputStream codedInputStream = CodedInputStream.newInstance(delimitedInputStream);
+    return codedInputStream.readFixed32();
+  }
 }
