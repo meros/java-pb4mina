@@ -133,4 +133,4 @@ This project is open source. See the repository for license details.
 
 ## Status
 
-This project is maintained and actively used. Bug reports and feature requests are welcome via GitHub issues.
+This is a proof-of-concept project. It is not actively maintained but contributions are welcome.
