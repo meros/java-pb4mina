@@ -19,7 +19,7 @@ public class ProtoBufCoderFactory implements ProtocolCodecFactory {
 	private ProtoBufMessageFactory protoBufMessageFactory;
 
 	/**
-	 * @param protoBufMessageFactory factory that created builders that the decoded uses to parse incoming messages
+	 * @param protoBufMessageFactory factory that creates builders that the decoder uses to parse incoming messages
 	 */
 	public ProtoBufCoderFactory(ProtoBufMessageFactory protoBufMessageFactory) {
 		this.protoBufMessageFactory = protoBufMessageFactory;

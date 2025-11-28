@@ -65,13 +65,13 @@ public class ProtoBufDecoder extends CumulativeProtocolDecoder {
 					
 					state = State.ReadingLength;
 
-					//There might be more message to be parsed 
+					// There might be more messages to be parsed
 					return true;
 				}					
 			}
 		} catch(IOException e) {
-			logger.error("IOException while trying to decode a readmessage", e);
-			ioSession.close(true);
+			logger.error("IOException while trying to decode a message", e);
+			ioSession.closeNow();
 		}
 
 		//Need more data
@@ -106,7 +106,7 @@ public class ProtoBufDecoder extends CumulativeProtocolDecoder {
 			return -1;
 		} 
 		
-		//Create lenght delimited input stream
+		// Create length-delimited input stream
 		InputStream delimitedInputStream = new BoundedInputStream(inputStream.asInputStream(), packageLengthTokenSize);
 
 		//Read length of incoming protobuf
