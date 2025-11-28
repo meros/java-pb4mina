@@ -1,0 +1,7 @@
+org/meros/pb4mina/ProtoBufEncoder.class
+org/meros/pb4mina/ProtoBufCoderFilter.class
+org/meros/pb4mina/ProtoBufDecoder.class
+org/meros/pb4mina/ProtoBufCoderFactory.class
+org/meros/pb4mina/ProtoBufDecoder$State.class
+org/meros/pb4mina/BoundedInputStream.class
+org/meros/pb4mina/ProtoBufMessageFactory.class
