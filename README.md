@@ -115,6 +115,18 @@ mvn clean verify
 mvn install
 ```
 
+## Code Formatting
+
+This project uses [Spotless](https://github.com/diffplug/spotless) with Google Java Format for code formatting.
+
+```bash
+# Check formatting
+mvn spotless:check
+
+# Apply formatting
+mvn spotless:apply
+```
+
 ## Dependencies
 
 | Dependency | Version | Description |
