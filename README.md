@@ -8,7 +8,9 @@ Protocol Buffer encoder/decoder for [Apache MINA](https://mina.apache.org/) Java
 
 ## Description
 
-pb4mina provides a seamless integration between Google Protocol Buffers and Apache MINA, enabling efficient binary message serialization for network applications. It handles message framing using a 4-byte fixed-length header, making it suitable for TCP-based communication.
+pb4mina connects Google Protocol Buffers to Apache MINA, so a MINA server can send and receive protobuf messages directly. It frames each message with a 4-byte length header, which makes it suitable for TCP-based communication.
+
+I wrote it in 2010 as a proof of concept and updated it in 2025 to Java 11, current dependencies, tests and CI.
 
 ## Features
 
@@ -24,7 +26,15 @@ pb4mina provides a seamless integration between Google Protocol Buffers and Apac
 
 ## Installation
 
-Add the following dependency to your `pom.xml`:
+pb4mina is not published to Maven Central. Build and install it into your local Maven repository first:
+
+```bash
+git clone https://github.com/meros/java-pb4mina.git
+cd java-pb4mina
+mvn install
+```
+
+Then add the dependency to your `pom.xml`:
 
 ```xml
 <dependency>
@@ -79,7 +89,7 @@ public void messageSent(IoSession session, Object message) {
 
 ### Sending Messages
 
-Simply write Protocol Buffer messages to the session:
+Write Protocol Buffer messages to the session:
 
 ```java
 MyProtoBufMessage message = MyProtoBufMessage.newBuilder()
@@ -135,14 +145,10 @@ mvn spotless:apply
 | Protocol Buffers | 3.25.5 | Serialization library |
 | SLF4J | 2.0.16 | Logging facade |
 
-## Contributing
+## Status
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+This is a proof-of-concept project. It is not actively maintained, but pull requests are welcome.
 
 ## License
 
-This project is open source. See the repository for license details.
-
-## Status
-
-This is a proof-of-concept project. It is not actively maintained but contributions are welcome.
+MIT. See [LICENSE](LICENSE).
